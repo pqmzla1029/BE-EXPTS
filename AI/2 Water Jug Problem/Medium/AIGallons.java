@@ -1,200 +1,283 @@
+package AI;
+
+/**
+ *
+ * @author Igor
+ */
+
 import static java.lang.System.exit;
 import java.util.*;
 
 class AIGallons {
 
-    static int a, b;
+    static int bucketA, bucketB;
     static int steps;
     static int rules[] = new int[15];
     static int reset = 0;
     static int ct = 0;
     static int incr;
-    static int aSize,bSize;
-    static int ta, tb;
-
-//check whether full or not
+    static int tbucketA, tbucketB;
+    static int maxA,maxB,goal;
+//Check State
     static int check() {
         if (steps > 10 || reset == 1) {
             return 1;
-        } else if (a == 2) {
+        } else if (bucketA == goal) {
             return 2;
         } else {
             return 0;
         }
     }
-
-//Empty Jug 1
-    static void empty1() {
-        a = 0;
+//Fill Bucket A
+    static void fillA() {
+        bucketA = bucketA + 4;
     }
-
-//Empty Jug 2
-    static void empty2() {
-        b = 0;
+//Fill Bucket B
+    static void fillB() {
+        bucketB += maxB;
     }
-
- //Fill Jug 1
-    static void fill1() {
-        a = a + aSize;
+//Empty Bucket A
+    static void emptyA() {
+        bucketA = 0;
     }
-
-//Fill Jug 2
-    static void fill2() {
-        b += bSize;
+//Empty Bucket B
+    static void emptyB() {
+        bucketB = 0;
     }
-
-//Transfer contents of Jug 1 to Jug 2
-    static void a_to_b() {
+//Transfer A To B till B is full
+    static void transferAtillBfull() {
         int temp = 0;
-        temp = 3 - b;
-        b = 3;
-        a = a - temp;
+        temp = maxB - bucketB;
+        bucketB = maxB;
+        bucketA = bucketA - temp;
     }
-
-//Transfer contents of Jug 2 to Jug 1
-
-    static void b_to_a() {
+//Transfer B To A till A is full
+    static void transferBtillAfull() {
         int temp = 0;
-        temp = 4 - a;
-        a = 4;
-        b = b - temp;
+        temp = 4 - bucketA;
+        bucketA = 4;
+        bucketB = bucketB - temp;
+    }
+//Empty contents of A into B
+    static void emptyAintoB() {
+        bucketB = bucketB + bucketA;
+        bucketA = 0;
+    }
+//Empty contents of B into A
+    static void emptyBintoA() {
+        bucketA = bucketA + bucketB;
+        bucketB = 0;
     }
 
-//Empty 1 Fill 2
-    static void empty1_fill2() {
-        b = b + a;
-        a = 0;
-    }
+    public static void call(int n) {
 
-//Empty 2 Fill 1
-    static void empty2_fill1() {
-        a = a + b;
-        b = 0;
-    }
+        tbucketA = bucketA;
+        tbucketB = bucketB;
 
-//Calling Actions
-    static void call(int n) {
-
-        ta = a;
-        tb = b;
-
-
-
+/*
+        if (steps > 10) {
+            System.out.println("ERROR num of steps greater than 10");
+        }
+*/
         ++steps;
         if (n == 1) {
-            fill1();
-        } //empty1();
+            fillA();
+        } //emptyA();
         else if (n == 2) {
-            fill2();
-        } //empty2();
+            fillB();
+        } //emptyB();
         else if (n == 3) {
-            empty1();
-        } //fill1();
+            emptyA();
+        } //fillA();
         else if (n == 4) {
-            empty2();
-        } //fill2();
+            emptyB();
+        } //fillB();
         else if (n == 5) {
-            a_to_b();
+            transferAtillBfull();
         } else if (n == 6) {
-            b_to_a();
+            transferBtillAfull();
         } else if (n == 7) {
-            empty1_fill2();
+            emptyAintoB();
         } else if (n == 8) {
-            empty2_fill1();
+            emptyBintoA();
         }
 
-        if (a > 4 || a < 0 || b > 3 || b < 0) {
+        if (bucketA > 4 || bucketA < 0 || bucketB > maxB || bucketB < 0) {
             reset = 1;
         }
 
     }
-//repetitive checking of rules
-
-    static void repeat(int rules[]) {
-        a = 0;
-        b = 0;
+//Rules Printing Number Format
+/*    public static void checkBucketData(int rules[]) {
+        bucketA = 0;
+        bucketB = 0;
         steps = 0;
 
-        System.out.println("\nJug 1\tJug 2\tRule");
-        System.out.println(a + "\t" + b + "\t");
+        System.out.println("\nBucketA\tBucketB\tRule");
+        System.out.println(bucketA + "\t" + bucketB + "\t");
         call(rules[0]);
         if (rules[0] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[0]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[0]);
         }
         call(rules[1]);
         if (rules[1] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[1]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[1]);
         }
         call(rules[2]);
         if (rules[2] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[2]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[2]);
         }
         call(rules[3]);
         if (rules[3] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[3]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[3]);
         }
         call(rules[4]);
         if (rules[4] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[4]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[4]);
         }
         call(rules[5]);
         if (rules[5] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[5]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[5]);
         }
         call(rules[6]);
         if (rules[6] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[6]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[6]);
         }
         call(rules[7]);
         if (rules[7] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[7]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[7]);
         }
         call(rules[8]);
         if (rules[8] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[8]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[8]);
         }
         call(rules[9]);
         if (rules[9] != 0) {
-            System.out.println(a + "\t" + b + "\t" + rules[9]);
+            System.out.println(bucketA + "\t" + bucketB + "\t" + rules[9]);
         }
     }
-
-    public static performSolving()
-    {
-        System.out.println("\nRules:\n1.Fill Jug 1.\n2.Fill Jug 2.\n3.Empty Jug 1.\n4.Empty Jug 2.\n5.Jug 1 to Jug 2 till full.\n6.Jug 2 to Jug 1 till full.\n7.Empty Jug 1 and add to Jug 2.\n8.Empty Jug 2 and add to Jug 1.");
-
-        int flag = 0;
-        int count1 = 0;
-
-        flag = 0;
-        count1 = 0;
-        steps = 0;
-        for (int i = 0; i < 10; ++i) {
-            rules[i] = 0;
+*/
+//Rules in Words
+    void wordsDisplay(int state) {
+        switch (state) {
+            case 0:
+                break;
+            case 1:
+                System.out.println("Fill A");
+                break;
+            case 2:
+                System.out.println("Fill B");
+                break;
+            case 3:
+                System.out.println("Empty A");
+                break;
+            case 4:
+                System.out.println("Empty B");
+                break;
+            case 5:
+                System.out.println("Transfer A To B till B is full");
+                break;
+            case 6:
+                System.out.println("Transfer B To A till A is full");
+                break;
+            case 7:
+                System.out.println("Empty contents of A into B");
+                break;
+            case 8:
+                System.out.println("Empty contents of B into A");
+                break;
+            default:
+                break;
         }
+    }
+//Rules in Words
+    void valuesDisplay(int state) {
+        if(state!=0)
+        {
+         call(state);
+         System.out.println("{"+bucketA+","+bucketB+"}");
+        }
+
+    }
+//Print Rules
+    public void printRules(int flag)
+    {
+        for(int i=0;i<10;i++)
+        {
+            wordsDisplay(rules[i]);
+            if(flag==1)
+                valuesDisplay(rules[i]);
+        }
+
+        System.out.println();
+        System.out.println();
+        System.out.println();
+    }
+//Input Requirements
+    public void inputSize() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter Max Size of A");
+        maxA = sc.nextInt();
+        System.out.println("Enter Max Size of B");
+        maxB = sc.nextInt();
+        System.out.println("Define Goal");
+        goal = sc.nextInt();
+        System.out.println();
+    }
+
+    public int finalOutput(int i, int j, int k, int l, int m, int n, int o, int p, int q, int r) {
+        int fflag = 0;
+        bucketA = 0;
+        bucketB = 0;
+        steps = 0;
+        try {
+            Thread.sleep(1000);
+            rules[0] = i;
+            rules[1] = j;
+            rules[2] = k;
+            rules[3] = l;
+            rules[4] = m;
+            rules[5] = n;
+            rules[6] = o;
+            rules[7] = p;
+            rules[8] = q;
+            rules[9] = r;
+            System.out.println("\nSolution Found\n");
+            //checkBucketData(rules);
+            int count2 = 0;
+
+            for (int z = 0; z < 10; ++z) {
+                if (rules[z] != 0) {
+                    ++count2;
+                }
+            }
+
+            System.out.println("Number of Steps= " + (count2)+"\n ");
+            fflag=1;
+
+            Thread.sleep(1000);
+        } catch (Exception e) {
+        }
+        return fflag;
+    }
+
+    public void performComputation()
+    {
+        int flag = 0;
+        steps = 0;
         reset = 0;
-        int temp1 = 0;
+        //int temp1 = 0;
         incr = 0;
-
-//Repititive Iterations...layered
+        //Repetitive Iterations Layered
         for (int i = 0; i < 8; ++i) {
-
             for (int j = 0; j < 8; ++j) {
-
                 for (int k = 0; k < 8; ++k) {
-
                     for (int l = 0; l < 8; ++l) {
-
                         for (int m = 0; m < 8; ++m) {
-
                             for (int n = 0; n < 8; ++n) {
-
                                 for (int o = 0; o < 8; ++o) {
-
                                     for (int p = 0; p < 8; ++p) {
-
                                         for (int q = 0; q < 8; ++q) {
-
                                             for (int r = 0; r < 8; ++r) {
                                                 reset = 0;
                                                 call(i);
@@ -207,41 +290,21 @@ class AIGallons {
                                                 call(p);
                                                 call(q);
                                                 call(r);
-                                                if (a == 2 && reset == 0) {
-                                                        rules[0] = i;
-                                                        rules[1] = j;
-                                                        rules[2] = k;
-                                                        rules[3] = l;
-                                                        rules[4] = m;
-                                                        rules[5] = n;
-                                                        rules[6] = o;
-                                                        rules[7] = p;
-                                                        rules[8] = q;
-                                                        rules[9] = r;
-                                                        System.out.println("\n");
-                                                        repeat(rules);
-                                                        int count2 = 0;
-
-                                                        for (int z = 0; z < 10; ++z) {
-                                                            if (rules[z] != 0) {
-
-                                                                ++count2;
-                                                            }
-                                                        }
-
-                                                        System.out.println("\nNumber of Steps= " + (count2 + 1));
-                                                        System.out.println("\n");
-
-
-                                                    }
-                                                    exit(0);//For Remaining Possible solutions Uncomment this
+                                                if (bucketA == goal && reset == 0) {
+                                                   flag=finalOutput(i,j,k,l,m,n,o,p,q,r);
+                                                   printRules(flag);
                                                 }
 
-                                                a = 0;
-                                                b = 0;
+                                                //System.out.println("\nWastage= " + wastage);
+                                                //comment the following lines for all solution in the state space tree
+                                                if(flag==1)
+                                                    exit(0);
+                                                //System.out.println("\n\n\nPlease wait for another solution.....");
+
+                                                bucketA = 0;
+                                                bucketB = 0;
                                                 steps = 0;
                                                 reset = 0;
-
                                             }
                                         }
                                     }
@@ -251,15 +314,21 @@ class AIGallons {
                     }
                 }
             }
+        }
+
     }
-
     public static void main(String args[]) {
-        Scanner sc=new Scanner(System.in);
-        System.out.println("Enter Max Size of A");
-        aSize=sc.nextInt();
-        System.out.println("Enter Max Size of B");
-        bSize=sc.nextInt();
-        AIGallons aig= new AIGallons();
-        aig.performSolving();
 
-     }
+        AIGallons aig=new AIGallons();
+
+        for(int i=0;i<10;i++)
+            rules[i]=i;
+        System.out.println("RULES");
+        aiwj.printRules(0);
+        //Input Requirements
+        aig.inputSize();
+        //Solving Question
+        aig.performComputation();
+
+    }
+}
